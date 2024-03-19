@@ -974,13 +974,17 @@ def convert_to_localized_md(model_list: str, localized_model_list: str, format_s
                 localized_model_index[title] = update
         else:
             # Synchronize title and its link
-            converted_model = _re_capture_title_link.sub(f"**[{title}]({model_link})**", localized_model_index[title], count=1)
+            converted_model = _re_capture_title_link.sub(
+                f"**[{title}]({model_link})**", localized_model_index[title], count=1
+            )
 
             # Synchronize paper and its link (if found)
             paper_title_link = _re_capture_paper_link.search(model)
             if paper_title_link is not None:
                 paper_title, paper_link = paper_title_link.groups()
-                converted_model = _re_capture_paper_link.sub(f" [{paper_title}]({paper_link})", converted_model, count=1)
+                converted_model = _re_capture_paper_link.sub(
+                    f" [{paper_title}]({paper_link})", converted_model, count=1
+                )
 
             if converted_model != localized_model_index[title]:
                 readmes_match = False
