@@ -1844,6 +1844,10 @@ class GenerationMixin:
                 )
 
         # 4. Define other model kwargs
+        if streamer is not None:
+            if streamer.__class__.__name__ == "STOKEStreamer":
+                generation_config.output_attentions = True
+                generation_config.output_hidden_states = True
         # decoder-only models with inputs_embeds forwarding must use caching (otherwise we can't detect whether we are
         # generating the first new token or not, and we only want to use the embeddings for the first new token)
         if not self.config.is_encoder_decoder and model_input_name == "inputs_embeds":
@@ -1882,7 +1886,11 @@ class GenerationMixin:
             input_ids = self.heal_tokens(input_ids, tokenizer)
 
         if streamer is not None:
-            streamer.put(input_ids.cpu())
+            if streamer.__class__.__name__ == "STOKEStreamer":
+                streamer.put((input_ids.cpu(), None, None))
+            else:
+                print(streamer.__class__.__name__)
+                streamer.put(input_ids.cpu())
 
         # 6. Prepare `max_length` depending on other stopping criteria.
         input_ids_length = input_ids.shape[-1]
@@ -2492,7 +2500,10 @@ class GenerationMixin:
             # update generated ids, model inputs, and length for next step
             input_ids = torch.cat([input_ids, next_tokens[:, None]], dim=-1)
             if streamer is not None:
-                streamer.put(next_tokens.cpu())
+                if streamer.__class__.__name__ == "STOKEStreamer":
+                    streamer.put((next_tokens.cpu(), outputs.hidden_states, outputs.attentions))
+                else:
+                    streamer.put(next_tokens.cpu())
             model_kwargs = self._update_model_kwargs_for_generation(
                 outputs,
                 model_kwargs,
@@ -2866,7 +2877,10 @@ class GenerationMixin:
             # update generated ids, model inputs, and length for next step
             input_ids = torch.cat([input_ids, next_tokens[:, None]], dim=-1)
             if streamer is not None:
-                streamer.put(next_tokens.cpu())
+                if streamer.__class__.__name__ == "STOKEStreamer":
+                    streamer.put((next_tokens.cpu(), outputs.hidden_states, outputs.attentions))
+                else:
+                    streamer.put(next_tokens.cpu())
             model_kwargs = self._update_model_kwargs_for_generation(
                 outputs,
                 model_kwargs,
@@ -3052,7 +3066,10 @@ class GenerationMixin:
             # update generated ids, model inputs, and length for next step
             input_ids = torch.cat([input_ids, next_tokens[:, None]], dim=-1)
             if streamer is not None:
-                streamer.put(next_tokens.cpu())
+                if streamer.__class__.__name__ == "STOKEStreamer":
+                    streamer.put((next_tokens.cpu(), outputs.hidden_states, outputs.attentions))
+                else:
+                    streamer.put(next_tokens.cpu())
             model_kwargs = self._update_model_kwargs_for_generation(
                 outputs,
                 model_kwargs,

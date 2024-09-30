@@ -126,6 +126,7 @@ _import_structure = {
         "GenerationConfig",
         "TextIteratorStreamer",
         "TextStreamer",
+        "STOKEStreamer",
         "WatermarkingConfig",
     ],
     "hf_argparser": ["HfArgumentParser"],
@@ -4905,7 +4906,7 @@ if TYPE_CHECKING:
     from .feature_extraction_utils import BatchFeature, FeatureExtractionMixin
 
     # Generation
-    from .generation import GenerationConfig, TextIteratorStreamer, TextStreamer, WatermarkingConfig
+    from .generation import GenerationConfig, TextIteratorStreamer, TextStreamer, STOKEStreamer, WatermarkingConfig
     from .hf_argparser import HfArgumentParser
 
     # Integrations
